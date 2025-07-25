@@ -7,7 +7,10 @@ const setCount =  async (foods: Food[], qty: number) =>{
         await element.save()
     });
 }
-
+export const getAllItems = async () =>{
+    const foods = await Food.all()
+    return foods
+}
 export const createFood = async (payload : {name: string, veg: boolean, category: Category, price:number}) =>{
     const food = Food.create({
         name: payload.name,
@@ -56,4 +59,10 @@ export const setAvailability = async() =>{
     const dessserts = await Food.findManyBy('category','desserts')
     setCount(dessserts, 50)
 
+}
+
+export const deleteFood = async( id: number)=>{
+    const food = await Food.findOrFail(id)
+    await food.delete()
+    
 }

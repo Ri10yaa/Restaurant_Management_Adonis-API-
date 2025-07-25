@@ -1,8 +1,22 @@
 /* eslint-disable prettier/prettier */
-import { postDishes, postOrder, validateId, validateDishId, validateDish, validateStatus } from '#validators/order'
+import {
+  postDishes,
+  postOrder,
+  validateId,
+  validateDish,
+  validateStatus,
+  validateDeleteDish,
+  validateCusId
+} from '#validators/order'
 import type { HttpContext } from '@adonisjs/core/http'
-import { createOrder, createDishes, getOrderById, deleteOrderById, deleteDishById, updateDishesById, updateOrderStatus } from '../repositories/orders_repo.js';
-
+import {
+  createOrder,
+  getOrderByCusId,
+  deleteOrderById,
+  updateOrderStatus,
+  calculateAmount,
+} from '../repositories/orders_repo.js'
+import { createDish, deleteDishById } from '../repositories/orderDish_repo.js'
 
 export default class OrdersController {
   async store({ request }: HttpContext) {
@@ -10,70 +24,75 @@ export default class OrdersController {
       const payload = await postOrder.validate(request.body())
       const order = await createOrder(payload)
 
-  
-      await request.body().dishes.forEach(async(element : {food_id: number, qty: number}) => {
-        const dish = await postDishes.validate(element)
-        await createDishes(order.id,dish)
-      });
-      
+      let dishes = [{}]
 
-      return { success: true, data: order }
+      for( const ele of request.body().dishes){
+        const dish = await postDishes.validate(ele)
+        const itm = await createDish(order.id, dish)
+        dishes.push(itm)
+      }
+      await calculateAmount(order.id)
+      return { success: true, data: { order: order, items: dishes } }
     } catch (err) {
-      throw err;
+      throw err
     }
-
   }
 
   async show({ params }: HttpContext) {
     try {
-      const param = await validateId.validate(params.id)
-      const data = await getOrderById(param.id)
+      const param = await validateCusId.validate(params)
+      const data = await getOrderByCusId(param.id)
 
-      return { success: true, data: data}
+      return { success: true, data: data }
     } catch (err) {
-      throw err;
+      throw err
     }
   }
 
-  async updateOrderDish({ request }: HttpContext) { 
-    try{
-      const payload = await validateDish.validate(request.body())
-      const res = await updateDishesById(payload)
+  async updateByDish({ params, request }: HttpContext) {
+    try {
+      const param = await validateId.validate(params)
+      const dish = await validateDish.validate(request.body())
 
-      return { success: true, data: res}
-    }catch(err){
-      throw err;
+      const res = await createDish(param.id, dish)
+      await calculateAmount(param.id)
+
+      return { success: true, data: res }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async updateByDeleteDish({ params }: HttpContext) {
+    try {
+      const param = await validateDeleteDish.validate(params)
+
+      const res = await deleteDishById(param.id, param.foodId)
+      await calculateAmount(param.id)
+
+      return { success: true, data: res }
+    } catch (err) {
+      throw err
     }
   }
 
   async updateOrderStatus({ params, request }: HttpContext) {
-      const param = await validateId.validate(params)
-      const payload = await validateStatus.validate(request.body())
+    const param = await validateId.validate(params)
+    const payload = await validateStatus.validate(request.body())
 
-      const res = await updateOrderStatus(param.id, payload.status)
+    const res = await updateOrderStatus(param.id, payload.status)
 
-      return { success: true, data: res}
-   }
+    return { success: true, data: res }
+  }
 
   async destroy({ params }: HttpContext) {
-      try {
-      const param = await validateId.validate(params.id)
+    try {
+      const param = await validateId.validate(params)
       await deleteOrderById(param.id)
 
-      return { success: true, data: 'Order deleted'}
+      return { success: true, data: 'Order deleted' }
     } catch (err) {
-      throw err;
+      throw err
     }
-   }
-
-   async deleteDishById({ request }: HttpContext ){
-    try{
-      const payload = await validateDishId.validate(request.body())
-      await deleteDishById(payload.order_id, payload.food_id)
-
-    }catch(err){
-      throw err;
-    }
-   }
-
+  }
 }

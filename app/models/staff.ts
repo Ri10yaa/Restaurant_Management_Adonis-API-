@@ -5,6 +5,8 @@ import User from './user.js'
 import { type BelongsTo } from '@adonisjs/lucid/types/relations'
 import { Role } from '#validators/user'
 export default class Staff extends BaseModel {
+  static table = 'staffs'
+
   @column({ isPrimary: true })
   declare id: number
 

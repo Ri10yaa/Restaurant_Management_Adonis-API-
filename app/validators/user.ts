@@ -24,6 +24,14 @@ export const postUser = vine.compile(
     })
 )
 
+export const validateLogin = vine.compile(
+    vine.object({
+        email: vine.string().email(),
+        password: vine.string().minLength(8),
+        role: vine.enum(['manager','staff','customer'])
+    })
+)
+
 export const postStaff = vine.compile(
     vine.object({
         name: vine.string().minLength(3).maxLength(30),

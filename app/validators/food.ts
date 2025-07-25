@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import vine from '@vinejs/vine'
-
+import { checkID } from '#start/Rules/check_id'
 export enum Category{
     MEALS = 'meals',
     RICE = 'rice',
@@ -19,4 +19,10 @@ export const validateFood = vine.compile(
         category: vine.enum(Category),
         price: vine.number()
     })
+)
+
+export const validateId = vine.compile(
+  vine.object({
+    id: vine.number().use(checkID({ table: 'foods' })),
+  })
 )

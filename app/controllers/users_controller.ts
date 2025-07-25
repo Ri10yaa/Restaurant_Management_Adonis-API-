@@ -2,7 +2,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { addCustomer } from '../repositories/customer_repo.js'
-import { postCustomer, postUser, postStaff } from '#validators/user'
+import { postCustomer, postUser, postStaff, validateLogin } from '#validators/user'
 import { addStaff } from '../repositories/staff_repo.js'
 export default class UsersController {
   async register({ request }: HttpContext) {
@@ -37,7 +37,7 @@ export default class UsersController {
   }
   async login({ request }: HttpContext) {
     try {
-      const payload = await postUser.validate(request.body())
+      const payload = await validateLogin.validate(request.body())
 
       const user = await User.verifyCredentials(payload.email, payload.password)
       const token = await User.accessTokens.create(user)

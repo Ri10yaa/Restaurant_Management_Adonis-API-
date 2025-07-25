@@ -8,29 +8,40 @@
 |
 */
 
-import auth from '@adonisjs/auth/services/main'
+// import auth from '@adonisjs/auth/services/main'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-
 router.group(()=>{
-  /*
-  -- Need login - post
-  */
+  router.post('/login','#controllers/users_controller.login') // email, pass, role
+  router.post('/register', '#controllers/users_controller.register')  // email pass name role phno
+  router.delete('/logout','#controllers/users_controller.logout').use(middleware.auth())
 
-  router.post('/', '#controllers/users_controller.register')  // email pass name role phno
 }).prefix('/auth')
 
 
 router.group(()=>{
-  /*
-  -- update - put / patch
-  -- delete - delete
-  -- get orders by customer ID - get
-  */
 
-  router.post('/','#controllers/orders_controller.store')  // cus_id, status, amt, dishes  = { 'food_id': '', 'qty' : ''}
-}).prefix('/orders')
+  router.get('/:id','#controllers/orders_controller.show') 
+  router.post('/','#controllers/orders_controller.store')  // cus_id, status ( optional ), dishes  = { 'food_id': '', 'qty' : ''}
+
+  router.patch('/:id/dish','#controllers/orders_controller.updateByDish') //  body : food_id and qty 
+  router.patch('/:id/dish/:foodId','#controllers/orders_controller.updateByDeleteDish')  
+  router.patch('/:id/status','#controllers/orders_controller.updateOrderStatus').use(middleware.staffAuth()) // body: status
+
+  router.delete('/:id','#controllers/orders_controller.destroy') 
+
+}).prefix('/orders').use(middleware.auth())
+
+
+router.group(()=>{
+ router.get('/all','#controllers/foods_controller.index') 
+ router.post('/', '#controllers/foods_controller.store').use(middleware.managerAuth()) // name veg  category price
+ router.patch('/set','#controllers/foods_controller.set').use(middleware.managerAuth())  // set availability
+ router.delete('/:id','#controllers/foods_controller.destroy').use(middleware.managerAuth())
+  
+}).prefix('/food').use(middleware.auth())
+
 
 router.group(()=>{
   /*
@@ -39,23 +50,16 @@ router.group(()=>{
   -- update patch
   -- get reservations by cus ID
   */
-}).prefix('/reserve')
+}).prefix('/reserve').use(middleware.auth()) 
 
 router.group(()=>{
   /*
-  -- add
-  -- delete
-  -- update patch
+  -- add staff
+  -- del staff
+  -- update staff
+  -- get staff
   */
- router.post('/', '#controllers/foods_controller.store') // name veg  category price
- router.patch('/set','#controllers/foods_controller.set')
-  
-}).prefix('/food')
+}).prefix('staff').use(middleware.managerAuth())
 
-router.group(()=>{
-  /*
-  -- reset aval
-  -- inc / desc aval
-  */
-}).prefix('staff')
+
 
