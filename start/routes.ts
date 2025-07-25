@@ -54,7 +54,6 @@ router.group(()=>{
 
 router.group(()=>{
   /*
-  -- add staff
   -- del staff
   -- update staff
   -- get staff

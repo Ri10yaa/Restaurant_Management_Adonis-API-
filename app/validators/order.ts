@@ -17,13 +17,13 @@ export const validateId = vine.compile(
 )
 export const validateCusId = vine.compile(
   vine.object({
-    id: vine.number().use(checkID({ table: 'customers' })),
+    id: vine.number().use(checkID({ table: 'users' })),
   })
 )
 
 export const postOrder = vine.compile(
   vine.object({
-    cus_id: vine.number().use(checkID({ table: 'customers' })),
+    cus_id: vine.number().use(checkID({ table: 'users' })),
     status: vine.enum(Status).optional()
   })
 )
