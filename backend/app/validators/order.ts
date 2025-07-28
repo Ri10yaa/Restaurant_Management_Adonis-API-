@@ -24,7 +24,8 @@ export const validateCusId = vine.compile(
 export const postOrder = vine.compile(
   vine.object({
     cus_id: vine.number().use(checkID({ table: 'users' })),
-    status: vine.enum(Status).optional()
+    status: vine.enum(Status).optional(),
+    amount: vine.number()
   })
 )
 

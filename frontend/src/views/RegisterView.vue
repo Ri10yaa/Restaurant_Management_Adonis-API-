@@ -21,7 +21,8 @@ const roles = [
 ]
 async function submit() {
     const res = await auth.register(form.value)
-    if (res !== undefined && !res?.success) {
+    console.log(res)
+    if (!res?.success) {
         notify({
             text: `${res.message}`,
             type: 'error'
@@ -36,7 +37,7 @@ async function submit() {
 
 <template>
     <div class="form-container">
-        <h2> Login </h2>
+        <h2> Register </h2>
         <form v-on:submit.prevent="submit">
             <label>
                 <span>Username</span>
@@ -80,7 +81,7 @@ async function submit() {
     background-color: #EEEEEE;
     box-shadow: #393E46 0px 5px 15px;
     font-size: large;
-    height: 370px;
+    height: fit-content;
 }
 
 form {

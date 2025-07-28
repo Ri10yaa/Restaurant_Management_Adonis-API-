@@ -28,4 +28,6 @@ export const useFoodStore = defineStore('food', () => {
     }
   }
 
+  return { foods,cols,getAllFood}
+
 })

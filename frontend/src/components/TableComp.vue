@@ -40,6 +40,18 @@ const handleNext = () => {
     }
 }
 
+const format = (items) =>{
+    for(const itm of items){
+        if(itm.veg == true){
+            itm.veg = 'Veg'
+        }
+        else{
+            itm.veg = 'Non-veg'
+        }
+    }
+    return items
+}
+
 
 watchEffect(() => {
     columns.value = [...props.cols]
@@ -59,7 +71,8 @@ const filteredItems = computed(() => {
     else {
         paginatedItems.value = data.value.slice(startIndex.value, endIndex.value)
     }
-    return paginatedItems.value
+    
+    return format(paginatedItems.value)
 })
 
 </script>
@@ -72,7 +85,7 @@ const filteredItems = computed(() => {
         </form>
     </div>
 
-    <div class="list-container" v-if="data.length > 0">
+    <div class="list-container" v-if="data.length >= 0">
         <table>
             <thead>
                 <tr>

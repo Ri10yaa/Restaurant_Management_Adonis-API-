@@ -62,6 +62,7 @@ export default class UsersController {
       throw err
     }
   }
+  
   async me({ auth }: HttpContext) {
     try {
       await auth.check()

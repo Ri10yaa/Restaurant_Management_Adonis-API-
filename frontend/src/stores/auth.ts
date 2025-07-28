@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(null)
+  const user = ref()
   const token = ref(localStorage.getItem('token'))
 
   async function api(method: string, url:string, payload = {}) {
@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(payload: {username: string, password: string}) {
-    const res = await api('POST', '/login', payload)
+    const res = await api('POST', '/auth/login', payload)
     if(!res.success){
       return res
     }
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(payload: {username: string, password: string}) {
-    const res = await api('POST', '/register', payload)
+    const res = await api('POST', '/auth/register', payload)
     if(!res.success){
       return res
     }
@@ -40,13 +40,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
-    await api('DELETE', '/logout')
+    await api('DELETE', '/auth/logout')
     token.value = null
     localStorage.removeItem('token')
   }
 
   async function me() {
-    const res = await api('GET', '/me')
+    const res = await api('GET', '/auth/me')
     user.value = res.user
     return user.value
   }

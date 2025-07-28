@@ -15,7 +15,9 @@ export default class Food extends BaseModel {
   @column()
   declare category: 'meals'| 'rice'|'breads'|'gravies'|'dosa'|'starters'|'desserts'|'beverages'
 
-  @column()
+  @column({
+    consume: (value:string) => Number.parseFloat(value),
+  })
   declare price: number
 
   @column()

@@ -16,6 +16,7 @@ router.group(()=>{
   router.post('/login','#controllers/users_controller.login') // email, pass, role
   router.post('/register', '#controllers/users_controller.register')  // email pass name role phno
   router.delete('/logout','#controllers/users_controller.logout').use(middleware.auth())
+  router.get('/me','#controllers/users_controller.me')
 
 }).prefix('/auth')
 
